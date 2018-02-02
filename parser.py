@@ -5,8 +5,8 @@ from datetime import datetime, date, time
 
 pp = pprint.PrettyPrinter(indent=4)
 
-OPEN_REGEXP = r'В ([\d]{2})-([\d+]{2}) (вестибюль [1-2] ст.|ст.) ([а-яёй А-Я-12]+) открыт[аы]*[,.]{1} ([а-я А-Я]+)'
-CLOSED_REGEXP = r'В ([\d]{2})-([\d+]{2}) (вестибюль [1-2] ст.|ст.) ([а-яёй А-Я-12]+) закрыт[аы]* (из-за [а-я А-Я]+)'
+OPEN_REGEXP = r'В ([\d]{2})-([\d+]{2}) (вестибюль [1-2] ст.|ст.) ([а-яёй А-Я-12]+) открыт[аы]*[,.]{1} ([а-яёй А-Я]+)'
+CLOSED_REGEXP = r'В ([\d]{2})-([\d+]{2}) (вестибюль [1-2] ст.|ст.) ([а-яёй А-Я-12]+) закрыт[аы]+[на вход.]* ([а-яёй А-Я-]+)'
 
 data = []
 
@@ -43,5 +43,11 @@ with open(file='./imported_data.csv', mode='r', encoding='utf-8-sig') as csv_fil
             event['state'] = 'unknown'
 
         data.append(event)
-        
-pp.pprint(data)
+
+with open(file='./parsed_data.csv', mode='a',) as output_file:
+    dict_writer = csv.DictWriter(output_file, data[0].keys())
+    dict_writer.writeheader()
+    dict_writer.writerows(data)
+
+# pp.pprint(data)
+print('{} is unknown'.format(len([x for x in data if x['state'] is 'unknown'])))
