@@ -5,11 +5,12 @@ from datetime import datetime, date, time
 from getters.station import get_station_from_text
 from getters.time import get_time_from_text, get_text_without_time
 from getters.state import get_state_from_text
+from getters.reason import get_reason_from_text
 
 pp = pprint.PrettyPrinter(indent=4)
 
-OPEN_REGEXP = r'[Вв ]*([\d]{2})-([\d+]{2}) (вестибюль [1-2] ст.|ст.) ([а-яёй А-Я-12]+) открыт[аы]*[,.]{1} ([а-яёй А-Я]+)'
-CLOSED_REGEXP = r'[Вв ]*([\d]{2})-([\d+]{2}) (вестибюль [1-2] ст.|ст.) ([а-яёй А-Я-12]+) закрыт[аы]+[на вход.]* ([а-яёй А-Я-]+)'
+OPEN_REGEXP = r'[Вв ]*([\d]+)[ч :\-.]+([\d]+)[ мин]* (вестибюль [1-2] ст.|ст.) ([а-яёй А-Я-12]+) открыт[аы]*[,.]{1} ([а-яёй А-Я]+)'
+CLOSED_REGEXP = r'[Вв ]*([\d]+)[ч :\-.]+([\d]+)[ мин]* (вестибюль [1-2] ст.|ст.) ([а-яёй А-Я-12]+) закрыт[аы]+[на вход.]* ([а-яёй А-Я-]+)'
 
 data = []
 
@@ -51,7 +52,7 @@ with open(file='./imported_data.csv', mode='r', encoding='utf-8-sig') as csv_fil
                 event['datetime'] = None
             event['station'] = get_station_from_text(get_text_without_time(raw_message))
             event['state'] = get_state_from_text(raw_message)
-            event['reason'] = None
+            event['reason'] = get_reason_from_text(raw_message)
         
         data.append(event)
 
@@ -61,5 +62,7 @@ with open(file='./parsed_data.csv', mode='a',) as output_file:
     dict_writer.writeheader()
     dict_writer.writerows(data)
 
-pp.pprint(data)
-print('{} of {} is done'.format(len([x for x in data if x['reason'] is not None]), len(data)))
+
+# print(len([x for x in data if (x['state'] is 'open')]))
+# pp.pprint([x for x in data if (x['reason'] is None and x['state'] is 'closed')])
+# print('{} of {} is done'.format(len([x for x in data if (x['reason'] is None and x['state'] is 'closed')]), len(data)))
