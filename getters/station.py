@@ -89,6 +89,8 @@ def get_station_from_text(text):
             return station
     return None
 
-
-
-
+def normalizer(station):
+    if station.lower() in stations:
+        return station.lower()
+    else:
+        return station
